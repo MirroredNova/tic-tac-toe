@@ -1,4 +1,7 @@
+import random
 import numpy
+
+options = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 
 def alternator(player):
@@ -29,17 +32,13 @@ def display_field(field_array):
 def check_next(field_array, ocoord, coord, player):
     try:
         if player in field_array[coord[0]][coord[1]]:
-            last_check = tuple(numpy.subtract(coord, tuple(numpy.subtract(ocoord, coord))))
-            if player in field_array[last_check[0]][last_check[1]]:
-                field_array[last_check[0]][last_check[1]] = player
-                display_field(field_array)
-                print('Player ' + player + ' is the winner!')
-                main()
+            difference = numpy.subtract(coord, ocoord)
+            last_spot = numpy.add(coord, difference)
+            if 0 <= last_spot[0] <= 2 and 0 <= last_spot[1] <= 2 and player in field_array[last_spot[0]][last_spot[1]]:
+                print('Winner is player ' + player)
+                exit()
+
     except TypeError:
-        return
-    except ValueError:
-        return
-    except IndexError:
         return
 
 
@@ -52,7 +51,10 @@ def win_conditions(field_array, coord, player):
 
 
 def play(player, field_array):
-    i = input('Player ' + player + ', enter the number in which to place your mark: ')
+    i = random.choice(options)
+    options.remove(i)
+    print(i)
+    # i = input('Player ' + player + ', enter the number in which to place your mark: ')
     if not is_number(i) or not any(int(i) in sublist for sublist in field_array):
         print('Value is not valid. Try again')
         return player
