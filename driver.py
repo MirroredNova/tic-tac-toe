@@ -34,6 +34,9 @@ def check_next(field_array, ocoord, coord, player):
         if player in field_array[coord[0]][coord[1]]:
             difference = numpy.subtract(coord, ocoord)
             last_spot = numpy.add(coord, difference)
+            other_last_spot = numpy.subtract(coord, difference)
+            print(difference)
+            print(last_spot)
             if 0 <= last_spot[0] <= 2 and 0 <= last_spot[1] <= 2 and player in field_array[last_spot[0]][last_spot[1]]:
                 print('Winner is player ' + player)
                 exit()
@@ -51,10 +54,8 @@ def win_conditions(field_array, coord, player):
 
 
 def play(player, field_array):
-    i = random.choice(options)
-    options.remove(i)
-    print(i)
-    # i = input('Player ' + player + ', enter the number in which to place your mark: ')
+    # 19237486 causes error
+    i = input('Player ' + player + ', enter the number in which to place your mark: ')
     if not is_number(i) or not any(int(i) in sublist for sublist in field_array):
         print('Value is not valid. Try again')
         return player
