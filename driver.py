@@ -1,7 +1,5 @@
 import numpy
 
-options = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-
 
 def alternator(player):
     """
@@ -11,8 +9,10 @@ def alternator(player):
     """
     if player in 'X':
         return 'O'
-    else:
+    if player in 'O':
         return 'X'
+    else:
+        raise ValueError
 
 
 def is_number(value):
@@ -34,7 +34,7 @@ def win(player):
     :param player: the current player that won
     :return: None
     """
-    print('Winner is player ' + player)
+    print(f'Winner is player {player}')
     exit()
 
 
@@ -48,7 +48,7 @@ def display_field(field_array):
     for row in field_array:
         row_str = '   | '
         for item in row:
-            row_str = row_str + str(item) + ' | '
+            row_str = f'{row_str}{str(item)} | '
         print(row_str)
         print('   -------------')
 
@@ -60,7 +60,7 @@ def in_bounds(field_array, coord):
     :param coord: coordinate to check
     :return: True if it is in bounds, False otherwise
     """
-    return True if 0 <= coord[0] <= 2 and 0 <= coord[1] <= 2 else False
+    return True if 0 <= coord[0] <= len(field_array) - 1 and 0 <= coord[1] <= len(field_array[0]) - 1 else False
 
 
 def player_in_coord(field_array, coord, player):
@@ -71,7 +71,7 @@ def player_in_coord(field_array, coord, player):
     :param player: player to check
     :return: True if the player is in the coord, False otherwise
     """
-    return True if 0 <= coord[0] <= 2 and 0 <= coord[1] <= 2 and player in field_array[coord[0]][coord[1]] else False
+    return True if in_bounds(field_array, coord) and player in field_array[coord[0]][coord[1]] else False
 
 
 def check_next(field_array, orig, found, player):
@@ -107,22 +107,15 @@ def win_conditions(field_array, coord, player):
     for dx in range(-1, 2):
         for dy in range(-1, 2):
             ncoord = (coord[0] + dx, coord[1] + dy)
-            if 0 <= ncoord[0] <= 2 and 0 <= ncoord[1] <= 2 and ncoord != coord:
+            if in_bounds(field_array, ncoord) and ncoord != coord:
                 check_next(field_array, coord, ncoord, player)
 
 
-def play(player, field_array):
-    """
-    Manage the plays and call helper methods like displaying the board and checking for wins
-    :param player: current player
-    :param field_array: the array that stores the history of where players have played
-    :return:  the next player
-    """
-    # 19237486 causes error
-    i = input('Player ' + player + ', enter the number in which to place your mark: ')
+def get_input(field_array, player):
+    i = input(f'Player {player}, enter the number in which to place your mark: ')
     if not is_number(i) or not any(int(i) in sublist for sublist in field_array):
         print('Value is not valid. Try again')
-        return player
+        return get_input(field_array, player)
     coord = ()
     for num, ind in enumerate(field_array):
         try:
@@ -131,10 +124,7 @@ def play(player, field_array):
             coord = (num, index)
         except ValueError:
             continue
-
-    display_field(field_array)
-    win_conditions(field_array, coord, player)
-    return alternator(player)
+    return coord
 
 
 def main():
@@ -145,11 +135,14 @@ def main():
     field_array = [[1, 2, 3],
                    [4, 5, 6],
                    [7, 8, 9]]
-
     player = 'X'
     display_field(field_array)
+
     while True:
-        player = play(player, field_array)
+        coord = get_input(field_array, player)
+        display_field(field_array)
+        win_conditions(field_array, coord, player)
+        player = alternator(player)
 
 
 if __name__ == '__main__':
